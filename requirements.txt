@@ -1,0 +1,9 @@
+keyboard==0.13.5
+pillow==11.1.0
+pyclip==0.7.0
+PyMTP==0.0.6
+pynput==1.7.7
+pyperclip==1.9.0
+pypiwin32==223
+pywin32==308
+six==1.17.0
