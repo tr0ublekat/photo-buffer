@@ -1,4 +1,4 @@
-#!venv/Scripts/python
+#!env/Scripts/python
 
 import subprocess
 import os
@@ -8,6 +8,9 @@ from io import BytesIO
 import keyboard
 import threading
 import time
+
+import win32con
+CF_PNG = win32clipboard.RegisterClipboardFormat("PNG")
 
 def check_device_connected():
     result = subprocess.run(['adb', 'devices'], capture_output=True, text=True)
@@ -36,14 +39,17 @@ def download_file(remote_path, local_path):
 def copy_image_to_clipboard(image_path):
     try:
         with Image.open(image_path) as img:
+            img.thumbnail((1920, 1080))
             output = BytesIO()
-            img.convert("RGB").save(output, "BMP")
-            data = output.getvalue()[14:]
+            # Сохраняем в PNG вместо BMP
+            img.save(output, "PNG", compress_level=9)
+            data = output.getvalue()
             output.close()
 
             win32clipboard.OpenClipboard()
             win32clipboard.EmptyClipboard()
-            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+            # Используем зарегистрированный формат PNG
+            win32clipboard.SetClipboardData(CF_PNG, data)
             win32clipboard.CloseClipboard()
             print("Изображение скопировано в буфер обмена!")
     except Exception as e:
